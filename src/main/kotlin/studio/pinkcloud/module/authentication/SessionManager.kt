@@ -1,30 +1,30 @@
 package studio.pinkcloud.module.authentication
 
-import io.ktor.server.auth.*
 import studio.pinkcloud.module.authentication.lib.IAuthRepository
 import studio.pinkcloud.module.authentication.lib.IUserSession
 
-class SessionManager<T: IUserSession> private constructor(private val authRepository: IAuthRepository) {
+class SessionManager private constructor(private val authRepository: IAuthRepository) {
     companion object {
-        private lateinit var instance: SessionManager<*>
+        private lateinit var instance: SessionManager
 
-        @Suppress("UNCHECKED_CAST")
-        fun <T : IUserSession> get(): SessionManager<T> {
-            return instance as SessionManager<T>
+        fun get(): SessionManager {
+            return instance
         }
 
-        fun <T : IUserSession> init(authRepository: IAuthRepository) {
-            instance = SessionManager<T>(authRepository)
+        fun init(authRepository: IAuthRepository) {
+            instance = SessionManager(authRepository)
         }
     }
 
-    suspend fun authorize(
+    suspend fun <T: IUserSession>authorize(
         username: String,
         password: String,
-        sessionGenerator: (username: String, password: String) -> IUserSession
-    ): IUserSession? {
+        sessionGenerator: (username: String, password: String) -> T
+    ): T? {
         val uuid = authRepository.authorizeAgent(username, password)
-        return uuid?.let { sessionGenerator(username, uuid.toString()) }
+        return uuid?.let {
+            sessionGenerator(username, uuid.toString())
+        }
     }
 
     suspend fun validate(session: IUserSession): Boolean =

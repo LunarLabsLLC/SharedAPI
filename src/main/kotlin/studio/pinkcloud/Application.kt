@@ -10,8 +10,7 @@ import studio.pinkcloud.controller.*
 import studio.pinkcloud.config.*
 import studio.pinkcloud.lib.type.UserSession
 import studio.pinkcloud.module.*
-import studio.pinkcloud.module.authentication.controller.authRoutes
-import studio.pinkcloud.module.authentication.configureAuth
+import studio.pinkcloud.module.configureAuth
 
 fun main() {
     embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module).start(wait = true)
