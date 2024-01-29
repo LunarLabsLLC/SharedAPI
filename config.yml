@@ -1,0 +1,7 @@
+developmentEnv = "development"
+dbName = ""
+dbConnectionStr = ""
+cookieSecretEncKey = ""
+cookieSecretSignKey = ""
+discordClientId = ""
+discordClientSecret = ""

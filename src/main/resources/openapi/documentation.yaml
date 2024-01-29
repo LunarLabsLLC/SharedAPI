@@ -1,0 +1,60 @@
+openapi: "3.0.3"
+info:
+  title: "shared_api API"
+  description: "shared_api API"
+  version: "1.0.0"
+servers:
+- url: "https://shared_api"
+paths:
+  /isitworking:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "yes it is!"
+  /auth/login:
+    post:
+      description: ""
+      responses:
+        "202":
+          description: "Accepted"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Success"
+  /auth/logout:
+    patch:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Success"
+  /auth/logout/all:
+    put:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Success"
