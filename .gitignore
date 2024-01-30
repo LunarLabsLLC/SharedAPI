@@ -36,5 +36,4 @@ out/
 .vscode/
 
 ### Config ###
-config-dev.yml
-config-dev.yml
+config-local.toml

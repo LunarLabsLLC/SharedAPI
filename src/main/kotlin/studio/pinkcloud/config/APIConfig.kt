@@ -1,18 +1,29 @@
 package studio.pinkcloud.config
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class APIConfig(
     var developmentEnv: String = "development",
+    var database: DatabaseConfig = DatabaseConfig(),
+    var cookieSecrets: CookieSecretsConfig = CookieSecretsConfig(),
+    var discordClient: DiscordOAuthConfig = DiscordOAuthConfig()
+)
 
-    val dbName: String = "",
-    val dbConnectionStr: String = "",
+@Serializable
+data class DatabaseConfig(
+    var name: String = "PinkCloud",
+    var connectionStr: String = "mongodb://localhost:27017",
+)
 
-    val cookieSecretEncKey: String = "",
-    val cookieSecretSignKey: String = "",
+@Serializable
+data class CookieSecretsConfig(
+    var sign: String = "",
+    var encryption: String = "",
+)
 
-    val discordClientId: String = "",
-    val discordClientSecret: String = "",
+@Serializable
+data class DiscordOAuthConfig(
+    var id: String = "",
+    var secret: String = "",
 )

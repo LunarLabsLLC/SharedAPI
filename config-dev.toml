@@ -1,0 +1,13 @@
+
+[database]
+    name = "PinkCloud"
+    connectionStr = "mongodb://localhost:27017"
+
+[cookieSecrets]
+    sign = "g2fkmK74tiOkV9KKgCKzZw=="
+    encryption = "uExoI+3ciEX8qiuIXuTTug=="
+
+[discordClient]
+    id = "."
+    secret = "."
+

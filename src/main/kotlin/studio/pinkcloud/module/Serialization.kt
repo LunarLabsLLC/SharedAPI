@@ -14,11 +14,4 @@ fun Application.configureSerialization() {
             }
         )
     }
-
-//  Example:
-//  routing {
-//        get("/json/kotlinx-serialization") {
-//            call.respond(mapOf("hello" to "world"))
-//        }
-//  }
 }
