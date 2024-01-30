@@ -8,6 +8,8 @@
     encryption = "uExoI+3ciEX8qiuIXuTTug=="
 
 [discordClient]
-    id = "."
-    secret = "."
+    id = ""
+    secret = ""
 
+[security]
+    logRounds = 12
