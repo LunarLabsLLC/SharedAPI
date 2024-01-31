@@ -8,9 +8,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.systemRoutes() {
-    routing {
-        get("/isitworking") {
-            call.respond(HttpStatusCode.OK, call.receiveText())
-        }
+  routing {
+    get("/isitworking") {
+      call.respond(HttpStatusCode.OK, mapOf("messages" to listOf("Yes!")))
     }
+  }
 }

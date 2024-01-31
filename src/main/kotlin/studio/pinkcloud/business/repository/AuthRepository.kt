@@ -6,33 +6,43 @@ import com.mongodb.client.model.Updates
 import kotlinx.coroutines.flow.firstOrNull
 import org.bson.types.ObjectId
 import studio.pinkcloud.business.AppDbContext
+import studio.pinkcloud.helpers.checkPwdHash
+import studio.pinkcloud.helpers.getPwdHash
 import studio.pinkcloud.lib.model.Agent
 import studio.pinkcloud.lib.model.Session
 import studio.pinkcloud.lib.type.AgentSession
-import studio.pinkcloud.module.authentication.refactor.IAuthRepository
+import studio.pinkcloud.lib.type.HttpError
+import studio.pinkcloud.lib.type.get
+import studio.pinkcloud.module.authentication.lib.IAuthRepository
 
 object AuthRepository : IAuthRepository<AgentSession> {
   private suspend fun getAgentFromName(agentName: String): Agent? {
     return AppDbContext.agents.find<Agent>(Filters.eq(Agent::name.name, agentName)).firstOrNull()
   }
 
-  suspend fun registerAgent(
+  private suspend fun getAgentFromEmail(email: String): Agent? {
+    return AppDbContext.agents.find<Agent>(Filters.eq(Agent::email.name, email)).firstOrNull()
+  }
+
+  override suspend fun registerAgent(
     agentName: String,
     agentEmail: String,
-    pwdHash: String,
+    password: String,
   ): Agent {
-    val agent = Agent(ObjectId(), agentName, agentEmail, pwdHash, mutableSetOf())
+    if (getAgentFromName(agentName) != null) throw HttpError.UsernameConflict.get()
+    if (getAgentFromEmail(agentEmail) != null) throw HttpError.EmailConflict.get()
+    val agent = Agent(ObjectId(), agentName, agentEmail, getPwdHash(password), mutableSetOf())
     AppDbContext.agents.insertOne(agent)
     return agent
   }
 
   override suspend fun authorizeAgent(
     agentName: String,
-    pwdHash: String,
+    password: String,
   ): AgentSession? {
     val agent = getAgentFromName(agentName)
-    return if (agent != null && agent.pwdHash == pwdHash) {
-      AgentSession(agentName, ObjectId.get())
+    return if (agent != null && checkPwdHash(password, agent.pwdHash)) {
+      AgentSession(agentName, ObjectId.get().toString())
     } else {
       null
     }
@@ -44,7 +54,7 @@ object AuthRepository : IAuthRepository<AgentSession> {
       Updates.combine(
         Updates.addToSet(
           Agent::sessions.name,
-          Session(session.sessionId),
+          Session(ObjectId(session.sessionId)),
         ),
         Updates.currentDate(Agent::lastSessionAt.name),
       )
@@ -54,14 +64,15 @@ object AuthRepository : IAuthRepository<AgentSession> {
   }
 
   override suspend fun validateSession(session: AgentSession): Boolean {
-    return getAgentFromName(session.agentName)?.sessions?.any { s -> s.id == session.sessionId } ?: false
+    return getAgentFromName(session.agentName)?.sessions
+      ?.any { s -> s.id.toString() == session.sessionId } ?: false
   }
 
   override suspend fun invalidateSession(session: AgentSession) {
     val query = Filters.eq(Agent::name.name, session.agentName)
     val params =
       Updates.combine(
-        Updates.pull(Agent::sessions.name, Session(session.sessionId)),
+        Updates.pull(Agent::sessions.name, Session(ObjectId(session.sessionId))),
         Updates.currentDate(Agent::lastSessionAt.name),
       )
     val options = UpdateOptions().upsert(true)

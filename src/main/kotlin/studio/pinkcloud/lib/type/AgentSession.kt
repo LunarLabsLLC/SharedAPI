@@ -1,10 +1,9 @@
 package studio.pinkcloud.lib.type
 
-import org.bson.types.ObjectId
-import studio.pinkcloud.module.authentication.refactor.IAgentSession
+import studio.pinkcloud.module.authentication.lib.IAgentSession
 
 data class AgentSession(
   override val agentName: String,
-  override val sessionId: ObjectId,
+  override val sessionId: String,
 ) :
   IAgentSession(agentName, sessionId)

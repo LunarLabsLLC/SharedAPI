@@ -15,16 +15,13 @@ object AppDbContext {
   private var database: MongoDatabase
   var agents: MongoCollection<Agent>
     private set
-    get() {
-      return field
-    }
 
   init {
     runBlocking { database = connect() }
     agents = database.getCollection<Agent>("Agents")
   }
 
-  suspend fun connect(): MongoDatabase {
+  private suspend fun connect(): MongoDatabase {
     val connStr = ConnectionString(API_CONFIG.database.connectionStr)
     val client = MongoClientSettings.builder().applyConnectionString(connStr).build()
     return MongoClient.create(client)

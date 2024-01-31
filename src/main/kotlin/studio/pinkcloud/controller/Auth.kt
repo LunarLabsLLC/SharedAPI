@@ -15,10 +15,12 @@ import io.ktor.server.sessions.set
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import studio.pinkcloud.business.service.AuthService
+import studio.pinkcloud.helpers.hasValidSession
 import studio.pinkcloud.helpers.isValid
+import studio.pinkcloud.helpers.respondOk
 import studio.pinkcloud.lib.type.AgentSession
-import studio.pinkcloud.module.authentication.BadRequestException
-import studio.pinkcloud.module.respondOk
+import studio.pinkcloud.lib.type.HttpError
+import studio.pinkcloud.lib.type.get
 
 fun Application.authRoutes() {
   sessionRoutes()
@@ -29,14 +31,18 @@ fun Application.sessionRoutes() {
   routing {
     post("/auth/register") {
       val json = call.receive<JsonObject>()
-      val username = json.get("username")?.jsonPrimitive
-      val email = json.get("email")?.jsonPrimitive
-      val password = json.get("password")?.jsonPrimitive
+      val username = json["username"]?.jsonPrimitive
+      val email = json["email"]?.jsonPrimitive
+      val password = json["password"]?.jsonPrimitive
       if (username.isValid() && email.isValid() && password.isValid()) {
-        AuthService.registerAgent(username!!.content, email!!.content, password!!.content).also(call.sessions::set)
+        AuthService.register(username!!.content, email!!.content, password!!.content)
+          .takeIf { !call.hasValidSession() }
+          ?.also { AuthService.saveSession(it) }
+          ?.also { call.sessions.set(it) }
+
         call.respondOk()
       } else {
-        throw BadRequestException()
+        throw HttpError.BadRequest.get()
       }
     }
 

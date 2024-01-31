@@ -1,9 +1,17 @@
-package studio.pinkcloud.module.authentication.refactor
+package studio.pinkcloud.module.authentication.lib
+
+import studio.pinkcloud.lib.model.Agent
 
 interface IAuthRepository<T : IAgentSession> {
+  suspend fun registerAgent(
+    agentName: String,
+    agentEmail: String,
+    password: String,
+  ): Agent
+
   suspend fun authorizeAgent(
     agentName: String,
-    pwdHash: String,
+    password: String,
   ): T?
 
   suspend fun saveSession(session: T): T

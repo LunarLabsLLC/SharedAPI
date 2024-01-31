@@ -95,15 +95,14 @@ private fun <T> recursiveSetAll(
     ) {
       recursiveSetAll(it.getter.call(instance1), value)
     } else {
-      (it as? KMutableProperty1<out T & Any, *>)
-        ?.let {
-          if (value != null && value != getDefaultValue(String::class)) {
-            try {
-              it.setter.call(instance1, value)
-            } catch (_: Exception) {
-            }
+      (it as? KMutableProperty1<out T & Any, *>)?.let {
+        if (value != null && value != getDefaultValue(String::class)) {
+          try {
+            it.setter.call(instance1, value)
+          } catch (_: Exception) {
           }
         }
+      }
     }
   }
 }

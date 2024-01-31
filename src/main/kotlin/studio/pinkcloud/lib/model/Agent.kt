@@ -13,8 +13,3 @@ data class Agent(
   val sessions: MutableSet<Session>,
   val lastSessionAt: Date? = null,
 )
-
-data class Session(
-  @BsonId
-  val id: ObjectId,
-)

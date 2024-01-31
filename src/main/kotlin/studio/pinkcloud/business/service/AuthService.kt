@@ -2,33 +2,29 @@ package studio.pinkcloud.business.service
 
 import org.bson.types.ObjectId
 import studio.pinkcloud.business.repository.AuthRepository
-import studio.pinkcloud.helpers.getPwdHash
 import studio.pinkcloud.lib.type.AgentSession
 
 object AuthService {
   private var authRepository: AuthRepository = AuthRepository
 
-  suspend fun authorizeAgent(
+  suspend fun login(
     agentName: String,
     password: String,
   ): AgentSession? {
-    val session = authRepository.authorizeAgent(agentName, getPwdHash(password))
-    if (session != null) {
-      authRepository.saveSession(session)
-    }
-    return session
+    return authRepository.authorizeAgent(agentName, password)
+      ?.also { authRepository.saveSession(it) }
   }
 
-  suspend fun registerAgent(
+  suspend fun register(
     agentName: String,
     agentEmail: String,
     password: String,
   ): AgentSession {
-    authRepository.registerAgent(agentName, agentEmail, getPwdHash(password))
-    val session = AgentSession(agentName, ObjectId.get())
-    authRepository.saveSession(session)
-    return session
+    authRepository.registerAgent(agentName, agentEmail, password)
+    return AgentSession(agentName, ObjectId.get().toString())
   }
+
+  suspend fun saveSession(session: AgentSession): AgentSession = authRepository.saveSession(session)
 
   suspend fun validateSession(session: AgentSession): Boolean = authRepository.validateSession(session)
 

@@ -15,10 +15,10 @@ fun AuthenticationConfig.json(
   name: String? = null,
   configure: JsonAuthConfig.() -> Unit,
 ) {
-  val config = JsonAuthConfig(name)
-  config.apply(configure)
-  val provider = JsonAuthProvider(config)
-  register(provider)
+  JsonAuthConfig(name)
+    .apply(configure)
+    .let(::JsonAuthProvider)
+    .let { register(it) }
 }
 
 class JsonAuthConfig(name: String?) : AuthenticationProvider.Config(name) {
@@ -41,8 +41,8 @@ class JsonAuthChallengeContext(val call: ApplicationCall)
 class JsonAuthProvider(private val config: JsonAuthConfig) : AuthenticationProvider(config) {
   override suspend fun onAuthenticate(context: AuthenticationContext) {
     val json = context.call.receive<JsonObject>()
-    val username = json.get("username")?.jsonPrimitive
-    val password = json.get("password")?.jsonPrimitive
+    val username = json["username"]?.jsonPrimitive
+    val password = json["password"]?.jsonPrimitive
 
     var credentials: UserPasswordCredential? = null
     if (username.isValid() && password.isValid()) {

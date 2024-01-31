@@ -8,7 +8,6 @@ import io.ktor.server.netty.*
 import io.ktor.server.plugins.swagger.*
 import io.ktor.server.routing.*
 import studio.pinkcloud.business.AppDbContext
-import studio.pinkcloud.business.repository.AuthRepository
 import studio.pinkcloud.config.*
 import studio.pinkcloud.controller.*
 import studio.pinkcloud.module.*
@@ -29,7 +28,7 @@ fun Application.module() {
 
   middleware() // Runs before authorization!
 
-  configureAuth(AuthRepository)
+  configureAuth()
 
   configureRoutes()
 }

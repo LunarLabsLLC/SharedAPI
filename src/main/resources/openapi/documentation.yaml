@@ -13,25 +13,19 @@ paths:
         "200":
           description: "OK"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "yes it is!"
+                $ref: "#/components/schemas/Map_String"
   /auth/login:
     post:
       description: ""
       responses:
-        "202":
-          description: "Accepted"
+        "200":
+          description: "OK"
           content:
             '*/*':
               schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Success"
+                $ref: "#/components/schemas/Map_String"
   /auth/logout:
     patch:
       description: ""
@@ -41,10 +35,7 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Success"
+                $ref: "#/components/schemas/Map_String"
   /auth/logout/all:
     put:
       description: ""
@@ -54,7 +45,30 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Success"
+                $ref: "#/components/schemas/Map_String"
+  /auth/register:
+    post:
+      description: ""
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/JsonObject"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Map_String"
+components:
+  schemas:
+    Map:
+      type: "object"
+      properties: {}
+    Map_String:
+      type: "string"
+    JsonObject:
+      type: "object"
+      properties: {}
