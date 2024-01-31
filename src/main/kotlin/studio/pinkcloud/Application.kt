@@ -11,7 +11,6 @@ import studio.pinkcloud.business.AppDbContext
 import studio.pinkcloud.business.repository.AuthRepository
 import studio.pinkcloud.config.*
 import studio.pinkcloud.controller.*
-import studio.pinkcloud.lib.type.UserSession
 import studio.pinkcloud.module.*
 import studio.pinkcloud.module.configureAuth
 
@@ -22,7 +21,7 @@ fun main() {
 fun Application.module() {
   loadConfig()
 
-  AppDbContext.connect()
+  AppDbContext // Initializes DB
 
   configureHTTP()
   configureSockets()
@@ -30,7 +29,7 @@ fun Application.module() {
 
   middleware() // Runs before authorization!
 
-  configureAuth<UserSession>(AuthRepository)
+  configureAuth(AuthRepository)
 
   configureRoutes()
 }

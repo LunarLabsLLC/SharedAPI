@@ -1,11 +1,15 @@
 package studio.pinkcloud.module.authentication
 
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.request.*
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.auth.AuthenticationConfig
+import io.ktor.server.auth.AuthenticationContext
+import io.ktor.server.auth.AuthenticationProvider
+import io.ktor.server.auth.Principal
+import io.ktor.server.auth.UserPasswordCredential
+import io.ktor.server.request.receive
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonPrimitive
+import studio.pinkcloud.helpers.isValid
 
 fun AuthenticationConfig.json(
   name: String? = null,
@@ -34,8 +38,6 @@ class JsonAuthValidationContext(val call: ApplicationCall)
 
 class JsonAuthChallengeContext(val call: ApplicationCall)
 
-private fun isValid(o: JsonPrimitive?) = o?.isString == true && o.content.isNotEmpty()
-
 class JsonAuthProvider(private val config: JsonAuthConfig) : AuthenticationProvider(config) {
   override suspend fun onAuthenticate(context: AuthenticationContext) {
     val json = context.call.receive<JsonObject>()
@@ -43,10 +45,10 @@ class JsonAuthProvider(private val config: JsonAuthConfig) : AuthenticationProvi
     val password = json.get("password")?.jsonPrimitive
 
     var credentials: UserPasswordCredential? = null
-    if (isValid(username) && isValid(password)) {
+    if (username.isValid() && password.isValid()) {
       credentials = UserPasswordCredential(username!!.content, password!!.content)
-      val authenticatedUser = config.validationLambda?.invoke(JsonAuthValidationContext(context.call), credentials)
-      authenticatedUser?.also {
+      val authenticatedAgent = config.validationLambda?.invoke(JsonAuthValidationContext(context.call), credentials)
+      authenticatedAgent?.also {
         context.principal(it)
         return
       }

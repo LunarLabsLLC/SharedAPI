@@ -3,24 +3,32 @@ package studio.pinkcloud.business
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.kotlin.client.coroutine.MongoClient
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.runBlocking
 import org.bson.BsonInt64
 import org.bson.Document
 import studio.pinkcloud.config.API_CONFIG
+import studio.pinkcloud.lib.model.Agent
 
 object AppDbContext {
-  lateinit var database: MongoDatabase
+  private var database: MongoDatabase
+  var agents: MongoCollection<Agent>
+    private set
+    get() {
+      return field
+    }
 
-  fun connect(): MongoDatabase {
-    database =
-      runBlocking {
-        val connStr = ConnectionString(API_CONFIG.database.connectionStr)
-        val client = MongoClientSettings.builder().applyConnectionString(connStr).build()
-        MongoClient.create(client)
-          .getDatabase(API_CONFIG.database.name)
-          .apply { runCommand(Document("ping", BsonInt64(1))) }
-      }
-    return database
+  init {
+    runBlocking { database = connect() }
+    agents = database.getCollection<Agent>("Agents")
+  }
+
+  suspend fun connect(): MongoDatabase {
+    val connStr = ConnectionString(API_CONFIG.database.connectionStr)
+    val client = MongoClientSettings.builder().applyConnectionString(connStr).build()
+    return MongoClient.create(client)
+      .getDatabase(API_CONFIG.database.name)
+      .apply { runCommand(Document("ping", BsonInt64(1))) }
   }
 }

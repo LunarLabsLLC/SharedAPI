@@ -4,14 +4,20 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.principal
+import io.ktor.server.request.receive
 import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
 import io.ktor.server.sessions.clear
 import io.ktor.server.sessions.sessions
-import studio.pinkcloud.lib.type.UserSession
-import studio.pinkcloud.module.authentication.SessionManager
+import io.ktor.server.sessions.set
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import studio.pinkcloud.business.service.AuthService
+import studio.pinkcloud.helpers.isValid
+import studio.pinkcloud.lib.type.AgentSession
+import studio.pinkcloud.module.authentication.BadRequestException
 import studio.pinkcloud.module.respondOk
 
 fun Application.authRoutes() {
@@ -21,6 +27,19 @@ fun Application.authRoutes() {
 
 fun Application.sessionRoutes() {
   routing {
+    post("/auth/register") {
+      val json = call.receive<JsonObject>()
+      val username = json.get("username")?.jsonPrimitive
+      val email = json.get("email")?.jsonPrimitive
+      val password = json.get("password")?.jsonPrimitive
+      if (username.isValid() && email.isValid() && password.isValid()) {
+        AuthService.registerAgent(username!!.content, email!!.content, password!!.content).also(call.sessions::set)
+        call.respondOk()
+      } else {
+        throw BadRequestException()
+      }
+    }
+
     authenticate("auth-json") {
       post("/auth/login") {
         call.respondOk()
@@ -29,17 +48,17 @@ fun Application.sessionRoutes() {
 
     authenticate("auth-session") {
       patch("/auth/logout") {
-        call.principal<UserSession>()?.also {
-          SessionManager.get().invalidate(it)
-          call.sessions.clear<UserSession>()
+        call.principal<AgentSession>()?.also {
+          AuthService.invalidateSession(it)
+          call.sessions.clear<AgentSession>()
         }
         call.respondOk()
       }
 
       put("/auth/logout/all") {
-        call.principal<UserSession>()?.also {
-          SessionManager.get().invalidateAll(it.username)
-          call.sessions.clear<UserSession>()
+        call.principal<AgentSession>()?.also {
+          AuthService.invalidateAll(it.agentName)
+          call.sessions.clear<AgentSession>()
         }
         call.respondOk()
       }
