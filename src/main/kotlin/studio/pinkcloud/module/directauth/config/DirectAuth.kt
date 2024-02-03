@@ -14,10 +14,10 @@ import studio.pinkcloud.lib.type.get
 import studio.pinkcloud.module.directauth.business.repository.IDirectAuthRepository
 import studio.pinkcloud.module.directauth.controller.sessionRoutes
 import studio.pinkcloud.module.directauth.helpers.hasValidSession
-import studio.pinkcloud.module.directauth.lib.type.IAgentSession
+import studio.pinkcloud.module.directauth.lib.type.IDirectAgentSession
 import java.security.SecureRandom
 
-inline fun <reified T : IAgentSession> Application.configureDirectAuth(
+inline fun <reified T : IDirectAgentSession> Application.configureDirectAuth(
   config: IDirectAuthConfig,
   authRepo: IDirectAuthRepository<T>,
 ) {

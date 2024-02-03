@@ -20,9 +20,9 @@ import studio.pinkcloud.lib.type.get
 import studio.pinkcloud.module.directauth.business.repository.IDirectAuthRepository
 import studio.pinkcloud.module.directauth.helpers.hasValidSession
 import studio.pinkcloud.module.directauth.helpers.isValid
-import studio.pinkcloud.module.directauth.lib.type.IAgentSession
+import studio.pinkcloud.module.directauth.lib.type.IDirectAgentSession
 
-inline fun <reified T : IAgentSession> Application.sessionRoutes(
+inline fun <reified T : IDirectAgentSession> Application.sessionRoutes(
   authRepo: IDirectAuthRepository<T>,
   baseRoute: String,
 ) {
