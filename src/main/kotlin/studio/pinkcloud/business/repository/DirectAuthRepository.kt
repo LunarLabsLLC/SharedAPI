@@ -15,11 +15,7 @@ import studio.pinkcloud.lib.type.HttpError
 import studio.pinkcloud.lib.type.get
 import studio.pinkcloud.module.directauth.business.repository.IDirectAuthRepository
 
-object AuthRepository : IDirectAuthRepository<AgentSession> {
-  private suspend fun getAgentFromName(agentName: String): Agent? {
-    return AppDbContext.agents.find<Agent>(Filters.eq(Agent::name.name, agentName)).firstOrNull()
-  }
-
+object DirectAuthRepository : IDirectAuthRepository<AgentSession> {
   private suspend fun getAgentFromEmail(email: String): Agent? {
     return AppDbContext.agents.find<Agent>(Filters.eq(Agent::email.name, email)).firstOrNull()
   }
@@ -29,42 +25,27 @@ object AuthRepository : IDirectAuthRepository<AgentSession> {
     agentEmail: String,
     password: String,
   ): AgentSession {
-    if (getAgentFromName(agentName) != null) throw HttpError.UsernameConflict.get()
+    if (BaseAuthRepository.getAgentFromName(agentName) != null) throw HttpError.UsernameConflict.get()
     if (getAgentFromEmail(agentEmail) != null) throw HttpError.EmailConflict.get()
-    val agent = Agent(ObjectId(), agentName, agentEmail, getPwdHash(password), mutableSetOf())
+    val agent = Agent(ObjectId(), agentEmail, mutableSetOf(), agentName, getPwdHash(password))
     AppDbContext.agents.insertOne(agent)
-    return AgentSession(agentName, ObjectId.get().toString())
+    return AgentSession(agentName, agentEmail, ObjectId.get().toString())
   }
 
   override suspend fun authorizeAgent(
     agentName: String,
     password: String,
   ): AgentSession? {
-    val agent = getAgentFromName(agentName)
+    val agent = BaseAuthRepository.getAgentFromName(agentName)
     return if (agent != null && checkPwdHash(password, agent.pwdHash)) {
-      AgentSession(agentName, ObjectId.get().toString())
+      AgentSession(agentName, agent.email, ObjectId.get().toString())
     } else {
       null
     }
   }
 
-  override suspend fun saveSession(session: AgentSession): AgentSession {
-    val query = Filters.eq(Agent::name.name, session.agentName)
-    val params =
-      Updates.combine(
-        Updates.addToSet(
-          Agent::sessions.name,
-          Session(ObjectId(session.sessionId)),
-        ),
-        Updates.currentDate(Agent::lastSessionAt.name),
-      )
-    val options = UpdateOptions().upsert(true)
-    AppDbContext.agents.updateOne(query, params, options)
-    return session
-  }
-
   override suspend fun validateSession(session: AgentSession): Boolean {
-    return getAgentFromName(session.agentName)?.sessions
+    return BaseAuthRepository.getAgentFromName(session.agentName)?.sessions
       ?.any { s -> s.id.toString() == session.sessionId } ?: false
   }
 
@@ -79,14 +60,7 @@ object AuthRepository : IDirectAuthRepository<AgentSession> {
     AppDbContext.agents.updateOne(query, params, options)
   }
 
-  override suspend fun invalidateAllSessions(agentName: String) {
-    val query = Filters.eq(Agent::name.name, agentName)
-    val params =
-      Updates.combine(
-        Updates.set(Agent::sessions.name, mutableSetOf<Session>()),
-        Updates.currentDate(Agent::lastSessionAt.name),
-      )
-    val options = UpdateOptions().upsert(true)
-    AppDbContext.agents.updateOne(query, params, options)
-  }
+  override suspend fun saveSession(session: AgentSession): AgentSession = BaseAuthRepository.saveSession(session)
+
+  override suspend fun invalidateAllSessions(agentName: String) = BaseAuthRepository.invalidateAllSessions(agentName)
 }

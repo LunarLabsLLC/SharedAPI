@@ -6,6 +6,7 @@ enum class HttpError(val statusCode: HttpStatusCode, val message: String) {
   AlreadyLoggedIn(HttpStatusCode.Forbidden, "Already logged in."),
   BadRequest(HttpStatusCode.BadRequest, "Invalid request."),
   EmailConflict(HttpStatusCode.Conflict, "Email already registered."),
+  InvalidToken(HttpStatusCode.Unauthorized, "Invalid token."),
   InvalidCredentials(HttpStatusCode.Unauthorized, "Invalid credentials."),
   InvalidSession(HttpStatusCode.Unauthorized, "Invalid session."),
   UsernameConflict(HttpStatusCode.Conflict, "Username already registered."),

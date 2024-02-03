@@ -7,9 +7,10 @@ import java.util.Date
 data class Agent(
   @BsonId
   val id: ObjectId,
-  val name: String,
   val email: String,
-  val pwdHash: String,
   val sessions: MutableSet<Session>,
+  val name: String?,
+  val pwdHash: String? = null,
+  val token: String? = null,
   val lastSessionAt: Date? = null,
 )
