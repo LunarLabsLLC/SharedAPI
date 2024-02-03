@@ -3,7 +3,7 @@ package studio.pinkcloud.lib.type
 import io.ktor.http.HttpStatusCode
 
 enum class HttpError(val statusCode: HttpStatusCode, val message: String) {
-  AlreadyLoggedIn(HttpStatusCode.Forbidden, "A lready logged in."),
+  AlreadyLoggedIn(HttpStatusCode.Forbidden, "Already logged in."),
   BadRequest(HttpStatusCode.BadRequest, "Invalid request."),
   EmailConflict(HttpStatusCode.Conflict, "Email already registered."),
   InvalidCredentials(HttpStatusCode.Unauthorized, "Invalid credentials."),

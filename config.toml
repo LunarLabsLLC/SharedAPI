@@ -3,13 +3,13 @@
     name = "PinkCloud"
     connectionStr = "mongodb://localhost:27017"
 
-[cookieSecrets]
-    sign = ""
-    encryption = ""
-
 [discordClient]
     id = ""
     secret = ""
 
 [security]
     logRounds = 12
+
+[cookieSecrets]
+    sign = ""
+    encryption = ""

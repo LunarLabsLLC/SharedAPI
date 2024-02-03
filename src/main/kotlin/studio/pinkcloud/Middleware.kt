@@ -1,4 +1,4 @@
-package studio.pinkcloud.module
+package studio.pinkcloud
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application

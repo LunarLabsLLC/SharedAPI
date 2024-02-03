@@ -9,9 +9,8 @@ import io.ktor.server.plugins.swagger.*
 import io.ktor.server.routing.*
 import studio.pinkcloud.business.AppDbContext
 import studio.pinkcloud.config.*
+import studio.pinkcloud.config.configureAuth
 import studio.pinkcloud.controller.*
-import studio.pinkcloud.module.*
-import studio.pinkcloud.module.configureAuth
 
 fun main() {
   embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module).start(wait = true)

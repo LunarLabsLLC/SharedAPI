@@ -1,4 +1,4 @@
-package studio.pinkcloud.module.authentication
+package studio.pinkcloud.module.directauth.config
 
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.AuthenticationConfig
@@ -9,7 +9,7 @@ import io.ktor.server.auth.UserPasswordCredential
 import io.ktor.server.request.receive
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import studio.pinkcloud.helpers.isValid
+import studio.pinkcloud.module.directauth.helpers.isValid
 
 fun AuthenticationConfig.json(
   name: String? = null,

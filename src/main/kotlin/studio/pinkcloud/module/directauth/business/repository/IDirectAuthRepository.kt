@@ -1,13 +1,13 @@
-package studio.pinkcloud.module.authentication.lib
+package studio.pinkcloud.module.directauth.business.repository
 
-import studio.pinkcloud.lib.model.Agent
+import studio.pinkcloud.module.directauth.lib.type.IAgentSession
 
-interface IAuthRepository<T : IAgentSession> {
+interface IDirectAuthRepository<T : IAgentSession> {
   suspend fun registerAgent(
     agentName: String,
     agentEmail: String,
     password: String,
-  ): Agent
+  ): T
 
   suspend fun authorizeAgent(
     agentName: String,

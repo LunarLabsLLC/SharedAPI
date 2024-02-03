@@ -13,9 +13,9 @@ import studio.pinkcloud.lib.model.Session
 import studio.pinkcloud.lib.type.AgentSession
 import studio.pinkcloud.lib.type.HttpError
 import studio.pinkcloud.lib.type.get
-import studio.pinkcloud.module.authentication.lib.IAuthRepository
+import studio.pinkcloud.module.directauth.business.repository.IDirectAuthRepository
 
-object AuthRepository : IAuthRepository<AgentSession> {
+object AuthRepository : IDirectAuthRepository<AgentSession> {
   private suspend fun getAgentFromName(agentName: String): Agent? {
     return AppDbContext.agents.find<Agent>(Filters.eq(Agent::name.name, agentName)).firstOrNull()
   }
@@ -28,12 +28,12 @@ object AuthRepository : IAuthRepository<AgentSession> {
     agentName: String,
     agentEmail: String,
     password: String,
-  ): Agent {
+  ): AgentSession {
     if (getAgentFromName(agentName) != null) throw HttpError.UsernameConflict.get()
     if (getAgentFromEmail(agentEmail) != null) throw HttpError.EmailConflict.get()
     val agent = Agent(ObjectId(), agentName, agentEmail, getPwdHash(password), mutableSetOf())
     AppDbContext.agents.insertOne(agent)
-    return agent
+    return AgentSession(agentName, ObjectId.get().toString())
   }
 
   override suspend fun authorizeAgent(
