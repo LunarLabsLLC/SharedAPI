@@ -44,7 +44,7 @@ inline fun <reified T : IAgentAuthSession> Application.proxyAuthRoutes(
       }
     }
 
-    get("$baseRoute/auth/login") {
+    post("$baseRoute/auth/login") {
       val json = call.receive<JsonObject>()
       val username = json["username"]?.jsonPrimitive
       val password = json["password"]?.jsonPrimitive
@@ -54,7 +54,7 @@ inline fun <reified T : IAgentAuthSession> Application.proxyAuthRoutes(
           ?.also { authRepo.saveSession(it) }
           ?.also {
             call.respond(HttpStatusCode.OK, Json.encodeToString(it))
-            return@get
+            return@post
           }
 
         throw HttpError.InvalidCredentials.get()
