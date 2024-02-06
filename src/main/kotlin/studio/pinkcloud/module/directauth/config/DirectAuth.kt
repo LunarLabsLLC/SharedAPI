@@ -9,13 +9,13 @@ import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
+import io.ktor.util.hex
 import studio.pinkcloud.lib.type.HttpError
 import studio.pinkcloud.lib.type.get
 import studio.pinkcloud.module.directauth.business.repository.IDirectAuthRepository
 import studio.pinkcloud.module.directauth.controller.sessionRoutes
 import studio.pinkcloud.module.directauth.helpers.hasValidSession
 import studio.pinkcloud.module.directauth.lib.type.IDirectAgentSession
-import java.security.SecureRandom
 
 inline fun <reified T : IDirectAgentSession> Application.configureDirectAuth(
   config: IDirectAuthConfig,
@@ -27,12 +27,11 @@ inline fun <reified T : IDirectAgentSession> Application.configureDirectAuth(
       cookie.maxAgeInSeconds = 86400
       cookie.secure = config.developmentEnv == "production"
       cookie.path = "/"
+
+      val secretEncryptKey = hex(config.cookieSecrets.encryption)
+      val secretSignKey = hex(config.cookieSecrets.sign)
       transform(
-        SessionTransportTransformerEncrypt(
-          config.cookieSecrets.encryption.toByteArray(),
-          config.cookieSecrets.sign.toByteArray(),
-          ivGenerator = { SecureRandom().generateSeed(16) },
-        ),
+        SessionTransportTransformerEncrypt(secretEncryptKey, secretSignKey),
       )
     }
   }

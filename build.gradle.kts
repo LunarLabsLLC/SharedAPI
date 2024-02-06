@@ -86,6 +86,10 @@ dependencies {
   // MongoDB Kotlin Coroutine support (db)
   implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.11.0")
 
+  // // Other services
+  // Email
+  implementation("com.sun.mail:javax.mail:1.6.2")
+
   // // Testing
   // Adds Server Tests
   testImplementation("io.ktor:ktor-server-tests-jvm")

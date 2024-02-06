@@ -1,15 +1,19 @@
 
-[database]
-    name = "PinkCloud"
-    connectionStr = "mongodb://localhost:27017"
+[cookieSecrets]
+    sign = ""
+    encryption = ""
 
-[discordClient]
-    id = ""
-    secret = ""
+[database]
+    name = "SharedAPI"
+    connectionStr = "mongodb://localhost:27017"
 
 [security]
     logRounds = 12
 
-[cookieSecrets]
-    sign = ""
-    encryption = ""
+[email]
+    address = "no-reply@pinkcloud.studio"
+    password = ""
+
+[discordClient]
+    id = ""
+    secret = ""

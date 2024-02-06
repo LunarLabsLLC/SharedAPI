@@ -6,7 +6,6 @@ import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.delete
-import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import kotlinx.serialization.encodeToString
@@ -17,6 +16,7 @@ import studio.pinkcloud.helpers.respondOk
 import studio.pinkcloud.lib.type.HttpError
 import studio.pinkcloud.lib.type.get
 import studio.pinkcloud.module.agentauth.business.repository.IAgentAuthRepository
+import studio.pinkcloud.module.agentauth.helpers.sendRegistrationEmail
 import studio.pinkcloud.module.agentauth.lib.type.IAgentAuthSession
 import studio.pinkcloud.module.directauth.helpers.isValid
 
@@ -25,6 +25,18 @@ inline fun <reified T : IAgentAuthSession> Application.proxyAuthRoutes(
   baseRoute: String,
 ) {
   routing {
+    post("$baseRoute/auth/token") {
+      val json = call.receive<JsonObject>()
+      val email = json["email"]?.jsonPrimitive
+      if (email.isValid()) {
+        authRepo.createAgent(email!!.content)
+          .also { sendRegistrationEmail(email.content, it) }
+        call.respondOk()
+      } else {
+        throw HttpError.BadRequest.get()
+      }
+    }
+
     post("$baseRoute/auth/register") {
       val json = call.receive<JsonObject>()
       val token = json["token"]?.jsonPrimitive
@@ -67,14 +79,8 @@ inline fun <reified T : IAgentAuthSession> Application.proxyAuthRoutes(
       val json = call.receive<JsonObject>()
       val sessionId = json["sessionId"]?.jsonPrimitive
       if (sessionId.isValid()) {
-        authRepo
-          .invalidateSession(sessionId!!.content)
-          .also {
-            call.respondOk()
-            return@delete
-          }
-
-        throw Error()
+        authRepo.invalidateSession(sessionId!!.content)
+        call.respondOk()
       } else {
         throw HttpError.BadRequest.get()
       }
@@ -84,14 +90,8 @@ inline fun <reified T : IAgentAuthSession> Application.proxyAuthRoutes(
       val json = call.receive<JsonObject>()
       val username = json["username"]?.jsonPrimitive
       if (username.isValid()) {
-        authRepo
-          .invalidateAllSessions(username!!.content)
-          .also {
-            call.respondOk()
-            return@delete
-          }
-
-        throw Error()
+        authRepo.invalidateAllSessions(username!!.content)
+        call.respondOk()
       } else {
         throw HttpError.BadRequest.get()
       }

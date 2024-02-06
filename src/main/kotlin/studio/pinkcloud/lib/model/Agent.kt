@@ -8,8 +8,8 @@ data class Agent(
   @BsonId
   val id: ObjectId,
   val email: String,
-  val sessions: MutableSet<Session>,
-  val name: String?,
+  val sessions: MutableSet<Session> = mutableSetOf(),
+  val name: String? = null,
   val pwdHash: String? = null,
   val token: String? = null,
   val lastSessionAt: Date? = null,

@@ -3,6 +3,8 @@ package studio.pinkcloud.module.agentauth.business.repository
 import studio.pinkcloud.module.agentauth.lib.type.IAgentAuthSession
 
 interface IAgentAuthRepository<T : IAgentAuthSession> {
+  suspend fun createAgent(email: String): String
+
   suspend fun registerAgent(
     token: String,
     agentName: String,

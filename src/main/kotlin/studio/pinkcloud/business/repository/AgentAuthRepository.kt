@@ -1,7 +1,6 @@
 package studio.pinkcloud.business.repository
 
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.UpdateOptions
 import com.mongodb.client.model.Updates
 import kotlinx.coroutines.flow.firstOrNull
 import org.bson.types.ObjectId
@@ -14,8 +13,19 @@ import studio.pinkcloud.lib.type.AgentSession
 import studio.pinkcloud.lib.type.HttpError
 import studio.pinkcloud.lib.type.get
 import studio.pinkcloud.module.agentauth.business.repository.IAgentAuthRepository
+import java.util.UUID
 
 object AgentAuthRepository : IAgentAuthRepository<AgentSession> {
+  override suspend fun createAgent(email: String): String {
+    if (BaseAuthRepository.getAgentFromEmail(email) != null) throw HttpError.EmailConflict.get()
+
+    val uuid = UUID.randomUUID().toString()
+    AppDbContext.agents.insertOne(
+      Agent(ObjectId.get(), email, token = uuid),
+    )
+    return uuid
+  }
+
   override suspend fun registerAgent(
     token: String,
     agentName: String,
@@ -39,8 +49,7 @@ object AgentAuthRepository : IAgentAuthRepository<AgentSession> {
         ),
         Updates.currentDate(Agent::lastSessionAt.name),
       )
-    val options = UpdateOptions().upsert(true)
-    AppDbContext.agents.updateOne(query, params, options)
+    AppDbContext.agents.updateOne(query, params)
       .also {
         if (it.modifiedCount == 0L) {
           return null

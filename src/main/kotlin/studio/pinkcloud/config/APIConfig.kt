@@ -6,11 +6,12 @@ import studio.pinkcloud.module.directauth.config.IDirectAuthConfig
 
 @Serializable
 data class APIConfig(
-  var database: DatabaseConfig = DatabaseConfig(),
-  var discordClient: DiscordOAuthConfig = DiscordOAuthConfig(),
-  var security: SecurityConfig = SecurityConfig(),
   override var developmentEnv: String = "development",
   override var cookieSecrets: CookieSecretsConfig = CookieSecretsConfig(),
+  var database: DatabaseConfig = DatabaseConfig(),
+  var security: SecurityConfig = SecurityConfig(),
+  var email: EmailConfig = EmailConfig(),
+  var discordClient: DiscordOAuthConfig = DiscordOAuthConfig(),
 ) : IDirectAuthConfig
 
 @Serializable
@@ -28,4 +29,10 @@ data class DiscordOAuthConfig(
 @Serializable
 data class SecurityConfig(
   var logRounds: Int = 12,
+)
+
+@Serializable
+data class EmailConfig(
+  var address: String = "no-reply@pinkcloud.studio",
+  var password: String = "",
 )

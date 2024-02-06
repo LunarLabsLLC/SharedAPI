@@ -15,6 +15,10 @@ object BaseAuthRepository {
     return AppDbContext.agents.find<Agent>(Filters.eq(Agent::name.name, agentName)).firstOrNull()
   }
 
+  suspend fun getAgentFromEmail(email: String): Agent? {
+    return AppDbContext.agents.find<Agent>(Filters.eq(Agent::email.name, email)).firstOrNull()
+  }
+
   suspend fun saveSession(session: AgentSession): AgentSession {
     val query = Filters.eq(Agent::name.name, session.agentName)
     val params =
@@ -25,7 +29,7 @@ object BaseAuthRepository {
         ),
         Updates.currentDate(Agent::lastSessionAt.name),
       )
-    val options = UpdateOptions().upsert(true)
+    val options = UpdateOptions()
     AppDbContext.agents.updateOne(query, params, options)
     return session
   }
@@ -37,7 +41,7 @@ object BaseAuthRepository {
         Updates.set(Agent::sessions.name, mutableSetOf<Session>()),
         Updates.currentDate(Agent::lastSessionAt.name),
       )
-    val options = UpdateOptions().upsert(true)
+    val options = UpdateOptions()
     AppDbContext.agents.updateOne(query, params, options)
   }
 }

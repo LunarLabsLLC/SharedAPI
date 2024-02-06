@@ -3,9 +3,9 @@ package studio.pinkcloud.business.repository
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.UpdateOptions
 import com.mongodb.client.model.Updates
-import kotlinx.coroutines.flow.firstOrNull
 import org.bson.types.ObjectId
 import studio.pinkcloud.business.AppDbContext
+import studio.pinkcloud.business.repository.BaseAuthRepository.getAgentFromEmail
 import studio.pinkcloud.helpers.checkPwdHash
 import studio.pinkcloud.helpers.getPwdHash
 import studio.pinkcloud.lib.model.Agent
@@ -16,10 +16,6 @@ import studio.pinkcloud.lib.type.get
 import studio.pinkcloud.module.directauth.business.repository.IDirectAuthRepository
 
 object DirectAuthRepository : IDirectAuthRepository<AgentSession> {
-  private suspend fun getAgentFromEmail(email: String): Agent? {
-    return AppDbContext.agents.find<Agent>(Filters.eq(Agent::email.name, email)).firstOrNull()
-  }
-
   override suspend fun registerAgent(
     agentName: String,
     agentEmail: String,
@@ -56,7 +52,7 @@ object DirectAuthRepository : IDirectAuthRepository<AgentSession> {
         Updates.pull(Agent::sessions.name, Session(ObjectId(session.sessionId))),
         Updates.currentDate(Agent::lastSessionAt.name),
       )
-    val options = UpdateOptions().upsert(true)
+    val options = UpdateOptions()
     AppDbContext.agents.updateOne(query, params, options)
   }
 
