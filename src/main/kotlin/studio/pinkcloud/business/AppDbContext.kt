@@ -10,15 +10,19 @@ import org.bson.BsonInt64
 import org.bson.Document
 import studio.pinkcloud.config.API_CONFIG
 import studio.pinkcloud.lib.model.Agent
+import studio.pinkcloud.lib.model.Application
 
 object AppDbContext {
   private var database: MongoDatabase
   var agents: MongoCollection<Agent>
     private set
+  var applications: MongoCollection<Application>
+    private set
 
   init {
     runBlocking { database = connect() }
     agents = database.getCollection<Agent>("Agents")
+    applications = database.getCollection<Application>("Applications")
   }
 
   private suspend fun connect(): MongoDatabase {

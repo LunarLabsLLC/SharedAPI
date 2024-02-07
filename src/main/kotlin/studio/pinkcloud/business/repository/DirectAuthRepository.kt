@@ -50,7 +50,7 @@ object DirectAuthRepository : IDirectAuthRepository<AgentSession> {
     val params =
       Updates.combine(
         Updates.pull(Agent::sessions.name, Session(ObjectId(session.sessionId))),
-        Updates.currentDate(Agent::lastSessionAt.name),
+        Updates.currentDate(Agent::lastSeenAt.name),
       )
     val options = UpdateOptions()
     AppDbContext.agents.updateOne(query, params, options)

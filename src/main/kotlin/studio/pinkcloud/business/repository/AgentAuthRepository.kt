@@ -8,6 +8,7 @@ import studio.pinkcloud.business.AppDbContext
 import studio.pinkcloud.helpers.checkPwdHash
 import studio.pinkcloud.helpers.getPwdHash
 import studio.pinkcloud.lib.model.Agent
+import studio.pinkcloud.lib.model.Application
 import studio.pinkcloud.lib.model.Session
 import studio.pinkcloud.lib.type.AgentSession
 import studio.pinkcloud.lib.type.HttpError
@@ -16,6 +17,21 @@ import studio.pinkcloud.module.agentauth.business.repository.IAgentAuthRepositor
 import java.util.UUID
 
 object AgentAuthRepository : IAgentAuthRepository<AgentSession> {
+  override suspend fun validateApplication(apiKey: String): Boolean {
+    val filter = Filters.eq(Application::apiKey.name, apiKey)
+
+    AppDbContext.applications.find<Application>(filter)
+      .firstOrNull()
+      ?.also {
+        val params = Updates.currentDate(Application::lastSeenAt.name)
+        AppDbContext.applications.updateOne(filter, params)
+
+        return true
+      }
+
+    return false
+  }
+
   override suspend fun createAgent(email: String): String {
     if (BaseAuthRepository.getAgentFromEmail(email) != null) throw HttpError.EmailConflict.get()
 
@@ -47,7 +63,7 @@ object AgentAuthRepository : IAgentAuthRepository<AgentSession> {
           Agent::token.name,
           null,
         ),
-        Updates.currentDate(Agent::lastSessionAt.name),
+        Updates.currentDate(Agent::lastSeenAt.name),
       )
     AppDbContext.agents.updateOne(query, params)
       .also {
@@ -77,12 +93,10 @@ object AgentAuthRepository : IAgentAuthRepository<AgentSession> {
 
   override suspend fun invalidateSession(sessionId: String) {
     val query = Filters.elemMatch(Agent::sessions.name, Filters.eq("_id", ObjectId(sessionId)))
-    val meTest = AppDbContext.agents.find<Agent>(query).firstOrNull()
-    println(meTest)
     val params =
       Updates.combine(
         Updates.pull(Agent::sessions.name, Session(ObjectId(sessionId))),
-        Updates.currentDate(Agent::lastSessionAt.name),
+        Updates.currentDate(Agent::lastSeenAt.name),
       )
     AppDbContext.agents.updateOne(query, params)
   }

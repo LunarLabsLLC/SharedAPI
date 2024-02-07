@@ -27,7 +27,7 @@ object BaseAuthRepository {
           Agent::sessions.name,
           Session(ObjectId(session.sessionId)),
         ),
-        Updates.currentDate(Agent::lastSessionAt.name),
+        Updates.currentDate(Agent::lastSeenAt.name),
       )
     val options = UpdateOptions()
     AppDbContext.agents.updateOne(query, params, options)
@@ -39,7 +39,7 @@ object BaseAuthRepository {
     val params =
       Updates.combine(
         Updates.set(Agent::sessions.name, mutableSetOf<Session>()),
-        Updates.currentDate(Agent::lastSessionAt.name),
+        Updates.currentDate(Agent::lastSeenAt.name),
       )
     val options = UpdateOptions()
     AppDbContext.agents.updateOne(query, params, options)
