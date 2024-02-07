@@ -9,8 +9,7 @@ COPY build.gradle.kts settings.gradle.kts gradle.properties gradlew* ./
 COPY gradle/wrapper ./gradle/wrapper
 
 # Download dependencies
-RUN chmod -x ./gradlew
-RUN ./gradlew --no-daemon dependencies
+RUN bash ./gradlew --no-daemon dependencies
 
 # Rebuild the source code only when needed
 FROM deps AS builder
@@ -19,7 +18,7 @@ WORKDIR /app
 COPY src ./src
 
 # Build the application
-RUN ./gradlew --no-daemon shadowJar
+RUN bash ./gradlew --no-daemon shadowJar
 
 # Production image. Copy the necessary files, configures the user, then runs
 FROM base AS runner
