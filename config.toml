@@ -4,8 +4,8 @@
     encryption = ""
 
 [database]
-    name = "SharedAPI"
-    connectionStr = "mongodb://localhost:27017"
+    name = "PCSSharedAPI"
+    connectionStr = ""
 
 [security]
     logRounds = 12

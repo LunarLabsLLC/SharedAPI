@@ -1,11 +1,11 @@
 
 [cookieSecrets]
-    sign = "b9735b294ba9a5cc00c4581bec2fc4f9"
-    encryption = "ee1a6a4f508f484f67119f0aef160e42"
+    sign = "52783606936b9c35d1223be30c0e19b5"
+    encryption = "7b9279d53151719a2300dd36fb08c191"
 
 [database]
     name = "PCSSharedAPI"
-    connectionStr = "mongodb://elaina:%26*%402m9%24%5E6a%408K7M@localhost:27017/"
+    connectionStr = "mongodb://admin:hGZor59gz8RU6UzuJDb4YprF@100.105.201.65:40006/admin"
 
 [security]
     logRounds = 12

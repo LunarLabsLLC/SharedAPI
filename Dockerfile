@@ -31,6 +31,9 @@ RUN adduser --system --uid 1001 ktor
 COPY --from=builder /app/build/libs/*.jar ./app.jar
 COPY config-prod.toml config.toml ./
 
+# Ensure the ktor user has write permissions to /app
+RUN chown -R ktor:kotlin /app
+
 USER ktor
 
 # Expose the port on which Ktor will run and configures env

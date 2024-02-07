@@ -16,8 +16,8 @@ data class APIConfig(
 
 @Serializable
 data class DatabaseConfig(
-  var name: String = "PinkCloud",
-  var connectionStr: String = "mongodb://localhost:27017",
+  var name: String = "PCSSharedAPI",
+  var connectionStr: String = "",
 )
 
 @Serializable
