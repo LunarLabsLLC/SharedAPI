@@ -5,7 +5,7 @@
 
 [database]
     name = "PCSSharedAPI"
-    connectionStr = "mongodb://admin:hGZor59gz8RU6UzuJDb4YprF@100.105.201.65:40006/admin"
+    connectionStr = "mongodb://100.88.121.120:27017/"
 
 [security]
     logRounds = 12
