@@ -1,4 +1,4 @@
-package studio.pinkcloud.module.agentauth.helpers
+package studio.pinkcloud.module.proxiedauth.helpers
 
 import studio.pinkcloud.config.API_CONFIG
 import java.time.LocalDate

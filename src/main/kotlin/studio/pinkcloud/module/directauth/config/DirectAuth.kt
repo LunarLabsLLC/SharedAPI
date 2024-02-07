@@ -17,10 +17,7 @@ import studio.pinkcloud.module.directauth.controller.sessionRoutes
 import studio.pinkcloud.module.directauth.helpers.hasValidSession
 import studio.pinkcloud.module.directauth.lib.type.IDirectAgentSession
 
-inline fun <reified T : IDirectAgentSession> Application.configureDirectAuthSessions(
-  config: IDirectAuthConfig,
-  authRepo: IDirectAuthRepository<T>,
-) {
+inline fun <reified T : IDirectAgentSession> Application.configureDirectAuthSessions(config: IDirectAuthConfig) {
   install(Sessions) {
     cookie<T>("user_session") {
       cookie.extensions["SameSite"] = "lax"

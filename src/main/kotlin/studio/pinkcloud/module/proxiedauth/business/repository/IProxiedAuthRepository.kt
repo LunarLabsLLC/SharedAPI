@@ -1,10 +1,8 @@
-package studio.pinkcloud.module.agentauth.business.repository
+package studio.pinkcloud.module.proxiedauth.business.repository
 
-import studio.pinkcloud.module.agentauth.lib.type.IAgentAuthSession
+import studio.pinkcloud.module.proxiedauth.lib.type.IProxiedAuthSession
 
-interface IAgentAuthRepository<T : IAgentAuthSession> {
-  suspend fun validateApplication(apiKey: String): Boolean
-
+interface IProxiedAuthRepository<T : IProxiedAuthSession> {
   suspend fun createAgent(email: String): String
 
   suspend fun registerAgent(

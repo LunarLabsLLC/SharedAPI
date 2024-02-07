@@ -3,11 +3,11 @@ package studio.pinkcloud.module.directauth.business.repository
 import studio.pinkcloud.module.directauth.lib.type.IDirectAgentSession
 
 interface IDirectAuthRepository<T : IDirectAgentSession> {
-  suspend fun registerAgent(
-    agentName: String,
-    agentEmail: String,
-    password: String,
-  ): T
+//  suspend fun registerAgent(
+//    agentName: String,
+//    agentEmail: String,
+//    password: String,
+//  ): T
 
   suspend fun authorizeAgent(
     agentName: String,

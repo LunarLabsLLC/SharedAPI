@@ -1,4 +1,4 @@
-package studio.pinkcloud.module.agentauth.config
+package studio.pinkcloud.module.apikeyauth.config
 
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.AuthenticationConfig

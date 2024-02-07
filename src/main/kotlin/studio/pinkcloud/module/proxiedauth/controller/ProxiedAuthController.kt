@@ -1,4 +1,4 @@
-package studio.pinkcloud.module.agentauth.controller
+package studio.pinkcloud.module.proxiedauth.controller
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
@@ -16,17 +16,18 @@ import kotlinx.serialization.json.jsonPrimitive
 import studio.pinkcloud.helpers.respondOk
 import studio.pinkcloud.lib.type.HttpError
 import studio.pinkcloud.lib.type.get
-import studio.pinkcloud.module.agentauth.business.repository.IAgentAuthRepository
-import studio.pinkcloud.module.agentauth.helpers.sendRegistrationEmail
-import studio.pinkcloud.module.agentauth.lib.type.IAgentAuthSession
 import studio.pinkcloud.module.directauth.helpers.isValid
+import studio.pinkcloud.module.proxiedauth.business.repository.IProxiedAuthRepository
+import studio.pinkcloud.module.proxiedauth.helpers.sendRegistrationEmail
+import studio.pinkcloud.module.proxiedauth.lib.type.IProxiedAuthSession
 
-inline fun <reified T : IAgentAuthSession> Application.proxyAuthRoutes(
-  authRepo: IAgentAuthRepository<T>,
+inline fun <reified T : IProxiedAuthSession> Application.proxiedAuthRoutes(
+  authRepo: IProxiedAuthRepository<T>,
   baseRoute: String,
+  authToUse: String,
 ) {
   routing {
-    authenticate("api-key-auth") {
+    authenticate(authToUse) {
       post("$baseRoute/auth/token") {
         val json = call.receive<JsonObject>()
         val email = json["email"]?.jsonPrimitive

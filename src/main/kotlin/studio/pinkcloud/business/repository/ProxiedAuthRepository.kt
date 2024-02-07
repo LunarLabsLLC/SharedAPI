@@ -8,30 +8,14 @@ import studio.pinkcloud.business.AppDbContext
 import studio.pinkcloud.helpers.checkPwdHash
 import studio.pinkcloud.helpers.getPwdHash
 import studio.pinkcloud.lib.model.Agent
-import studio.pinkcloud.lib.model.Application
 import studio.pinkcloud.lib.model.Session
 import studio.pinkcloud.lib.type.AgentSession
 import studio.pinkcloud.lib.type.HttpError
 import studio.pinkcloud.lib.type.get
-import studio.pinkcloud.module.agentauth.business.repository.IAgentAuthRepository
+import studio.pinkcloud.module.proxiedauth.business.repository.IProxiedAuthRepository
 import java.util.UUID
 
-object AgentAuthRepository : IAgentAuthRepository<AgentSession> {
-  override suspend fun validateApplication(apiKey: String): Boolean {
-    val filter = Filters.eq(Application::apiKey.name, apiKey)
-
-    AppDbContext.applications.find<Application>(filter)
-      .firstOrNull()
-      ?.also {
-        val params = Updates.currentDate(Application::lastSeenAt.name)
-        AppDbContext.applications.updateOne(filter, params)
-
-        return true
-      }
-
-    return false
-  }
-
+object ProxiedAuthRepository : IProxiedAuthRepository<AgentSession> {
   override suspend fun createAgent(email: String): String {
     if (BaseAuthRepository.getAgentFromEmail(email) != null) throw HttpError.EmailConflict.get()
 
@@ -47,8 +31,13 @@ object AgentAuthRepository : IAgentAuthRepository<AgentSession> {
     agentName: String,
     password: String,
   ): AgentSession? {
-    if (BaseAuthRepository.getAgentFromName(agentName) != null) throw HttpError.UsernameConflict.get()
     val query = Filters.eq(Agent::token.name, token)
+
+    val agent = AppDbContext.agents.find<Agent>(query).firstOrNull()
+    if (agent == null || agent.pwdHash != null) return null
+
+    if (BaseAuthRepository.getAgentFromName(agentName) != null) throw HttpError.UsernameConflict.get()
+
     val params =
       Updates.combine(
         Updates.set(
@@ -66,11 +55,6 @@ object AgentAuthRepository : IAgentAuthRepository<AgentSession> {
         Updates.currentDate(Agent::lastSeenAt.name),
       )
     AppDbContext.agents.updateOne(query, params)
-      .also {
-        if (it.modifiedCount == 0L) {
-          return null
-        }
-      }
 
     BaseAuthRepository.getAgentFromName(agentName)
       ?.also {

@@ -1,8 +1,8 @@
-package studio.pinkcloud.module.agentauth.lib.type
+package studio.pinkcloud.module.proxiedauth.lib.type
 
 import io.ktor.server.auth.Principal
 
-interface IAgentAuthSession : Principal {
+interface IProxiedAuthSession : Principal {
   val agentName: String
   val agentEmail: String
   val sessionId: String
