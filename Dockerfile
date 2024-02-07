@@ -9,6 +9,7 @@ COPY build.gradle.kts settings.gradle.kts gradle.properties gradlew* ./
 COPY gradle/wrapper ./gradle/wrapper
 
 # Download dependencies
+RUN chmod -x ./gradlew
 RUN ./gradlew --no-daemon dependencies
 
 # Rebuild the source code only when needed
